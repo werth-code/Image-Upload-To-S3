@@ -1,11 +1,10 @@
 import React from 'react'
 import ImageUploader from 'react-images-upload'
 
-function UploadComponent(props) {
-    return (
+const UploadComponent = props => (
             <form>
-                <label>
-                    <input placeholder="Client S3 URL" id='urlInput' type='text' onChange={props.onUrlChange} value={props.url}></input>
+                <label>Client S3 URL:
+                    <input id='urlInput' type='text' onChange={props.onUrlChange} value={props.url}></input>
                 </label>
                     <ImageUploader
                         key='image-uploader'
@@ -17,10 +16,7 @@ function UploadComponent(props) {
                         onChange={props.onChange}
                         imgExtensions={['.jpg', '.jpeg']}
                         maxFileSize={5242880}/>
-
-                <button type="submit">Upload</button>
             </form>
-    )
-}
+)
 
 export default UploadComponent
