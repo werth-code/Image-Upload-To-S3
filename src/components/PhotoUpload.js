@@ -1,37 +1,69 @@
-import {React} from 'react'
-import S3FileUpload from 'react-s3/lib/ReactS3';
-const { AWSAccessKeyId, AWSSecretKey, photobucket } = process.env;
+import {React, useState} from 'react'
+import UploadComponent from './UploadComponent'
+//import S3FileUpload from 'react-s3/lib/ReactS3';
+//const { AWSAccessKeyId, AWSSecretKey, photobucket } = process.env;
 
-function PhotoUpload() {
-    
-    const config = {
-      bucketName: photobucket,
-      dirName: 'Enter Folder Name ', /* optional */ // need to get this from form name....
-      region: 'US East (N. Virginia) us-east-1',
-      accessKeyId: AWSAccessKeyId,
-      secretAccessKey: AWSSecretKey
+function PhotoUpload(props) {
+
+    const [progress, setProgress] = useState('getUpload')
+    const [url, setImageUrl] = useState(undefined)
+    const [errorMessage, setErrorMessage] = useState("")
+
+    const onUrlChange = e => setImageUrl(e.target.value)
+    const onImage = async(failed, success) => { 
+        if(!url) {
+            setErrorMessage("Missing An Upload URL")
+            console.log(errorMessage)
+            setProgress('uploadError')
+            return
+        }
+        setProgress('uploading')
+
+        try {
+            console.log('successImages')
+        }
+        catch(error) {
+            console.log(error)
+            setErrorMessage(error.message)
+            setProgress('uploadError')
+        }
     }
+    
+    // const config = {
+    //   bucketName: photobucket,
+    //   dirName: 'Enter Folder Name ', /* optional */ 
+    //   region: 'US East (N. Virginia) us-east-1',
+    //   accessKeyId: AWSAccessKeyId,
+    //   secretAccessKey: AWSSecretKey
+    // }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-    } 
+    // const upload = (e) => {
+    //     S3FileUpload.uploadFile(e.target.files[0], config)
+    //         .then( (data) => console.log(data.location))
+    //         .catch( (error) => alert(error))
+    // }
 
-    const upload = (e) => {
-        S3FileUpload.uploadFile(e.target.files[0], config)
-            .then( (data) => console.log(data.location))
-            .catch( (error) => alert(error))
+
+    const content = () => {
+        switch(progress) {
+            case 'getUpload': return <UploadComponent onUrlChange={onUrlChange} onImage={onImage} url={url}/>
+            case 'uploading': return <h2>Uploading..</h2>
+            case 'uploaded': return <img src={url} alt='uploaded'></img>
+            case 'uploadError':
+                return (
+                        <>
+                            <div>Error Message: {errorMessage}</div>
+                            return <div>Upload Images</div>
+                        </>
+                )
+            default: return <div>Upload Images</div>
+        }
     }
 
     return (
         <div>
-            <h2>Upload Photos</h2>
-            <h5>Choose A Folder</h5>
-            <form onSubmit={handleSubmit}>
-                <input type='text' placeholder='Name'></input>
-                <input type='file' name='file'></input>
-                <button type="submit">Upload</button>
-            </form>
-            
+            <h1>Upload An Image</h1>
+            {content()}
         </div>
     )
 }
